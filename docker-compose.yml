@@ -1,0 +1,44 @@
+---
+services:
+  kafka:
+    # Rule of thumb: Confluent Kafka Version = Apache Kafka Version + 4.0.0
+    image: &image confluentinc/cp-kafka:${KAFKA_VERSION:-7.9.0}
+    container_name: kafka
+    ports:
+      - "9001:9092"
+    healthcheck: &health_check # Health_check
+      test:
+        [
+          "CMD",
+          "/usr/bin/kafka-broker-api-versions",
+          "--bootstrap-server",
+          "localhost:19092",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    environment: &common_config
+      CLUSTER_ID: "gPJsB-TJE9oxCMwjUbji7Q"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      # Ports configuration
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "DOCKER"
+      # Broker specific general and port options
+      KAFKA_NODE_ID: "1"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,DOCKER://:19092,CONTROLLER://:29092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,DOCKER:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9001,DOCKER://kafka:19092"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29092"
+      # Replication options
+      KAFKA_DEFAULT_REPLICATION_FACTOR: "1"
+      KAFKA_MIN_INSYNC_REPLICAS: "1"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_PARTITION_VERIFICATION_ENABLE: "false"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      # Consumer group options
+      KAFKA_GROUP_COORDINATOR_REBALANCE_PROTOCOLS: "classic,consumer"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+      KAFKA_GROUP_CONSUMER_HEARTBEAT_INTERVAL_MS: "200"
+      KAFKA_GROUP_CONSUMER_MIN_HEARTBEAT_INTERVAL_MS: "100"
