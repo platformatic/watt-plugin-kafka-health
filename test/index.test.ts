@@ -65,6 +65,7 @@ test('should issue a signal when the consumer is lagging', async t => {
   const signals = await promise
   deepStrictEqual(signals[0].type, 'kafka:topics:lag')
   deepStrictEqual(signals[0].value, 4)
+  deepStrictEqual(signals[0].level, 'critical')
 })
 
 test('should issue no signals when the consumer is lagging but there are as many consumer as partitions', async t => {

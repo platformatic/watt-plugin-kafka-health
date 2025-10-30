@@ -24,7 +24,9 @@ export interface Signal {
   type: 'kafka:topics:lag'
   value: number
   description: string
+  level: string
 }
+
 export const defaultOptions: Partial<WattHealthPluginOptions> = {
   maxAllowedLag: 1000,
   interval: 60000,
@@ -186,6 +188,7 @@ class WattHealthPlugin {
             platformatic.sendHealthSignal({
               type: 'kafka:topics:lag',
               value: lagsToSignal[topic],
+              level: 'critical',
               description: `Member ${consumer.memberId} of consumers group ${groupId} is lagging for topic ${topic} and there are available consumers in the group.`
             })
           }
